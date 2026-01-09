@@ -1,0 +1,152 @@
+@import "tailwindcss";
+
+@config "../tailwind.config.js";
+
+@layer base {
+  body {
+    @apply bg-background text-white min-h-screen font-sans antialiased;
+    background-image: radial-gradient(
+      circle at center,
+      #1e242e 0%,
+      #0b0e14 100%
+    );
+  }
+}
+
+@layer utilities {
+  .bg-noise {
+    background-image: url("https://www.transparenttextures.com/patterns/dark-matter.png");
+    background-repeat: repeat;
+  }
+
+  .text-glow-gold {
+    text-shadow: 0 0 10px rgba(234, 179, 8, 0.4);
+  }
+
+  .border-glow-gold {
+    box-shadow: 0 0 15px rgba(234, 179, 8, 0.2);
+  }
+
+  .shimmer {
+    background: linear-gradient(
+      90deg,
+      rgba(255, 255, 255, 0) 0%,
+      rgba(255, 255, 255, 0.05) 50%,
+      rgba(255, 255, 255, 0) 100%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+@keyframes pulse-live {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(0.95);
+  }
+}
+
+.animate-pulse-live {
+  animation: pulse-live 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Scrollbar for scoreboard */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  @apply bg-background;
+}
+::-webkit-scrollbar-thumb {
+  @apply bg-gunmetal rounded-full border-2 border-background;
+}
+
+/* HUD & Tactical Utilities */
+.clip-angled {
+  clip-path: polygon(
+    10px 0,
+    100% 0,
+    100% calc(100% - 10px),
+    calc(100% - 10px) 100%,
+    0 100%,
+    0 10px
+  );
+}
+
+.clip-angled-sm {
+  clip-path: polygon(
+    5px 0,
+    100% 0,
+    100% calc(100% - 5px),
+    calc(100% - 5px) 100%,
+    0 100%,
+    0 5px
+  );
+}
+
+.bg-scanlines {
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0),
+    rgba(255, 255, 255, 0) 50%,
+    rgba(0, 0, 0, 0.2) 50%,
+    rgba(0, 0, 0, 0.2)
+  );
+  background-size: 100% 4px;
+  pointer-events: none;
+}
+
+.animate-scan {
+  animation: scan 8s linear infinite;
+}
+
+@keyframes scan {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 0 100%;
+  }
+}
+
+.custom-card {
+  @apply bg-gunmetal/80 border-l-2 border-white/10 backdrop-blur-md relative overflow-hidden transition-all duration-300;
+  background-image: linear-gradient(
+    105deg,
+    rgba(255, 255, 255, 0.03) 0%,
+    rgba(255, 255, 255, 0) 100%
+  );
+}
+
+.custom-card:hover {
+  @apply border-gold bg-gunmetal;
+  box-shadow: 0 0 20px rgba(234, 179, 8, 0.1);
+}
+
+/* Rank Badges */
+.rank-badge-1 {
+  background: linear-gradient(135deg, #ffd700 0%, #ca8a04 100%);
+  box-shadow: 0 0 15px rgba(234, 179, 8, 0.4);
+}
+.rank-badge-2 {
+  background: linear-gradient(135deg, #e2e8f0 0%, #94a3b8 100%);
+  box-shadow: 0 0 15px rgba(148, 163, 184, 0.2);
+}
+.rank-badge-3 {
+  background: linear-gradient(135deg, #fdba74 0%, #ea580c 100%);
+  box-shadow: 0 0 15px rgba(234, 88, 12, 0.2);
+}

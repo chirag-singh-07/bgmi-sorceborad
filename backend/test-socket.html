@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Socket.IO Test Client - BGMI Scoreboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        
+        h1 {
+            color: #333;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+        
+        .status {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            text-align: center;
+        }
+        
+        .status.connected {
+            background: #d4edda;
+            color: #155724;
+            border: 2px solid #c3e6cb;
+        }
+        
+        .status.disconnected {
+            background: #f8d7da;
+            color: #721c24;
+            border: 2px solid #f5c6cb;
+        }
+        
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+        }
+        
+        .section h2 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+        
+        .event-log {
+            background: #212529;
+            color: #0f0;
+            padding: 15px;
+            border-radius: 5px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .event-log .event {
+            margin-bottom: 8px;
+            padding: 5px;
+            border-left: 3px solid #0f0;
+            padding-left: 10px;
+        }
+        
+        .event-log .timestamp {
+            color: #888;
+            font-size: 0.85em;
+        }
+        
+        .leaderboard-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+        
+        .leaderboard-table th {
+            background: #667eea;
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+        
+        .leaderboard-table td {
+            padding: 10px 12px;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .leaderboard-table tr:hover {
+            background: #f1f3f5;
+        }
+        
+        .rank-1 {
+            background: #ffd70020 !important;
+            font-weight: bold;
+        }
+        
+        .rank-2 {
+            background: #c0c0c020 !important;
+        }
+        
+        .rank-3 {
+            background: #cd7f3220 !important;
+        }
+        
+        .match-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+        
+        .info-card {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .info-card .label {
+            color: #6c757d;
+            font-size: 0.85em;
+            margin-bottom: 5px;
+        }
+        
+        .info-card .value {
+            color: #212529;
+            font-size: 1.5em;
+            font-weight: bold;
+        }
+        
+        button {
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background: #5568d3;
+        }
+        
+        .clear-btn {
+            background: #dc3545;
+        }
+        
+        .clear-btn:hover {
+            background: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 BGMI Scoreboard - Socket.IO Test Client</h1>
+        <p class="subtitle">Real-time connection testing tool</p>
+        
+        <div id="status" class="status disconnected">
+            ❌ Disconnected
+        </div>
+        
+        <div class="section">
+            <h2>📊 Current Leaderboard</h2>
+            <div id="leaderboard">
+                <p style="color: #6c757d; text-align: center;">Waiting for data...</p>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>🎯 Match Information</h2>
+            <div class="match-info" id="matchInfo">
+                <div class="info-card">
+                    <div class="label">Match Number</div>
+                    <div class="value">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Status</div>
+                    <div class="value">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Total Teams</div>
+                    <div class="value">-</div>
+                </div>
+                <div class="info-card">
+                    <div class="label">Connected Clients</div>
+                    <div class="value" id="clientCount">1</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h2>📡 Event Log</h2>
+            <button onclick="requestState()">🔄 Request Current State</button>
+            <button class="clear-btn" onclick="clearLog()">🗑️ Clear Log</button>
+            <div class="event-log" id="eventLog">
+                <div class="event">
+                    <span class="timestamp">[Waiting for connection...]</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+    <script>
+        // Connect to Socket.IO server
+        const socket = io('http://localhost:5000');
+        
+        // Status element
+        const statusEl = document.getElementById('status');
+        const eventLogEl = document.getElementById('eventLog');
+        
+        // Helper function to log events
+        function logEvent(eventName, data) {
+            const timestamp = new Date().toLocaleTimeString();
+            const eventDiv = document.createElement('div');
+            eventDiv.className = 'event';
+            eventDiv.innerHTML = `
+                <span class="timestamp">[${timestamp}]</span> 
+                <strong>${eventName}</strong>: ${JSON.stringify(data, null, 2)}
+            `;
+            eventLogEl.appendChild(eventDiv);
+            eventLogEl.scrollTop = eventLogEl.scrollHeight;
+        }
+        
+        // Helper function to render leaderboard
+        function renderLeaderboard(leaderboard) {
+            if (!leaderboard || leaderboard.length === 0) {
+                document.getElementById('leaderboard').innerHTML = 
+                    '<p style="color: #6c757d; text-align: center;">No teams yet</p>';
+                return;
+            }
+            
+            let html = `
+                <table class="leaderboard-table">
+                    <thead>
+                        <tr>
+                            <th>Rank</th>
+                            <th>Team Name</th>
+                            <th>Matches</th>
+                            <th>Kills</th>
+                            <th>Placement Pts</th>
+                            <th>Kill Pts</th>
+                            <th>Total Pts</th>
+                            <th>1st Place</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            leaderboard.forEach(team => {
+                const rankClass = team.rank <= 3 ? `rank-${team.rank}` : '';
+                html += `
+                    <tr class="${rankClass}">
+                        <td>${team.rank}</td>
+                        <td>${team.name}</td>
+                        <td>${team.matchesPlayed}</td>
+                        <td>${team.totalKills}</td>
+                        <td>${team.totalPlacementPoints}</td>
+                        <td>${team.totalKillPoints}</td>
+                        <td><strong>${team.totalPoints}</strong></td>
+                        <td>${team.firstPlaceFinishes}</td>
+                    </tr>
+                `;
+            });
+            
+            html += '</tbody></table>';
+            document.getElementById('leaderboard').innerHTML = html;
+        }
+        
+        // Helper function to update match info
+        function updateMatchInfo(matchState, teamCount = 0) {
+            const cards = document.querySelectorAll('.info-card .value');
+            cards[0].textContent = matchState.matchNumber || 0;
+            cards[1].textContent = matchState.state || 'UNKNOWN';
+            cards[2].textContent = teamCount;
+        }
+        
+        // Connection events
+        socket.on('connect', () => {
+            statusEl.className = 'status connected';
+            statusEl.textContent = '✅ Connected to server';
+            logEvent('CONNECTED', { socketId: socket.id });
+        });
+        
+        socket.on('disconnect', () => {
+            statusEl.className = 'status disconnected';
+            statusEl.textContent = '❌ Disconnected from server';
+            logEvent('DISCONNECTED', {});
+        });
+        
+        // Initial data when connecting
+        socket.on('initialData', (data) => {
+            logEvent('INITIAL_DATA', data);
+            renderLeaderboard(data.leaderboard);
+            updateMatchInfo(data.matchState, data.leaderboard.length);
+        });
+        
+        // Current state response
+        socket.on('currentState', (data) => {
+            logEvent('CURRENT_STATE', data);
+            renderLeaderboard(data.leaderboard);
+            updateMatchInfo(data.matchState, data.leaderboard.length);
+        });
+        
+        // Leaderboard updates
+        socket.on('leaderboardUpdate', (data) => {
+            logEvent('LEADERBOARD_UPDATE', data);
+            renderLeaderboard(data.leaderboard);
+        });
+        
+        // Match status updates
+        socket.on('matchStatusUpdate', (data) => {
+            logEvent('MATCH_STATUS_UPDATE', data);
+            updateMatchInfo(data.matchState);
+        });
+        
+        // Qualification updates
+        socket.on('qualificationUpdate', (data) => {
+            logEvent('QUALIFICATION_UPDATE', data);
+        });
+        
+        // Match submitted
+        socket.on('matchSubmitted', (data) => {
+            logEvent('MATCH_SUBMITTED', data);
+        });
+        
+        // Request current state
+        function requestState() {
+            socket.emit('requestCurrentState');
+            logEvent('REQUEST_SENT', { event: 'requestCurrentState' });
+        }
+        
+        // Clear log
+        function clearLog() {
+            eventLogEl.innerHTML = '<div class="event"><span class="timestamp">[Log cleared]</span></div>';
+        }
+    </script>
+</body>
+</html>
+    
