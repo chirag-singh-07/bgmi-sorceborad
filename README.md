@@ -61,81 +61,50 @@ Production-ready full-stack application for managing BGMI college tournament sco
 
 ## 🚀 Deployment on Render
 
-This project is configured for easy deployment on Render using a Blueprint specification.
+This project is ready for deployment on Render. Deploy the backend and frontend separately.
 
-### Option 1: Deploy via Render Dashboard (Recommended)
+### Quick Deploy (10 Minutes)
 
-1. **Push your code to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git remote add origin <your-github-repo-url>
-   git push -u origin main
-   ```
-
-2. **Connect to Render**
-   - Go to [Render Dashboard](https://dashboard.render.com/)
-   - Click **"New"** → **"Blueprint"**
-   - Connect your GitHub repository
-   - Render will automatically detect `render.yaml` and create both services
-
-3. **Configure Environment Variables**
-   
-   After deployment, set these environment variables in the **Frontend** service:
-   
-   - `VITE_API_URL`: `https://bgmi-scoreboard-backend.onrender.com/api`
-   - `VITE_SOCKET_URL`: `https://bgmi-scoreboard-backend.onrender.com`
-   
-   *(Replace with your actual backend URL from Render)*
-
-4. **Redeploy Frontend**
-   - After setting environment variables, trigger a manual deploy of the frontend service
-   - Your app will be live!
-
-### Option 2: Deploy Manually
-
-#### Backend Deployment
-1. Go to Render Dashboard → **New** → **Web Service**
-2. Connect your repository
+#### 1. Deploy Backend
+1. Go to [Render Dashboard](https://dashboard.render.com/) → **New +** → **Web Service**
+2. Connect your GitHub repository
 3. Configure:
    - **Name**: `bgmi-scoreboard-backend`
    - **Root Directory**: `backend`
-   - **Environment**: `Node`
    - **Build Command**: `npm install`
    - **Start Command**: `npm start`
-   - **Plan**: Free
-4. Add environment variable:
-   - `NODE_ENV`: `production`
-5. Click **Create Web Service**
+   - **Environment Variable**: `NODE_ENV=production`
+4. Click **Create Web Service**
+5. **Copy your backend URL** (e.g., `https://bgmi-scoreboard-backend.onrender.com`)
 
-#### Frontend Deployment
-1. Go to Render Dashboard → **New** → **Static Site**
-2. Connect your repository
+#### 2. Deploy Frontend
+1. Go to [Render Dashboard](https://dashboard.render.com/) → **New +** → **Static Site**
+2. Connect your GitHub repository
 3. Configure:
    - **Name**: `bgmi-scoreboard-frontend`
    - **Root Directory**: `frontend`
    - **Build Command**: `npm install && npm run build`
    - **Publish Directory**: `dist`
-4. Add environment variables:
-   - `VITE_API_URL`: `https://your-backend-url.onrender.com/api`
-   - `VITE_SOCKET_URL`: `https://your-backend-url.onrender.com`
-5. Click **Create Static Site**
+   - **Environment Variables**:
+     - `VITE_API_URL`: `https://your-backend-url.onrender.com/api`
+     - `VITE_SOCKET_URL`: `https://your-backend-url.onrender.com`
+4. Click **Create Static Site**
 
-### Important Notes for Render Deployment
+#### 3. Done!
+Your app is live at:
+- **Scoreboard**: `https://bgmi-scoreboard-frontend.onrender.com`
+- **Admin Panel**: `https://bgmi-scoreboard-frontend.onrender.com/admin`
 
-- **Free Tier Limitations**: 
-  - Backend service will spin down after 15 minutes of inactivity
-  - First request after spin-down may take 30-60 seconds
-  - Consider upgrading to paid plan for production tournaments
+### Detailed Instructions
 
-- **CORS Configuration**: 
-  - Already configured to accept all origins (`*`)
-  - Safe for public tournaments
+See [QUICKSTART.md](./QUICKSTART.md) for a quick guide or [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed step-by-step instructions.
 
-- **WebSocket Support**: 
-  - Render fully supports WebSocket connections
-  - No additional configuration needed
+### Important Notes
+
+- **Free Tier**: Services sleep after 15 minutes of inactivity
+- **Wake Time**: First request takes 30-60 seconds
+- **Auto Deploy**: Pushes to GitHub automatically trigger redeployment
+- **HTTPS**: Automatic on Render
 
 ## 🌐 Production URLs
 

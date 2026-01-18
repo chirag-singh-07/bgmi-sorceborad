@@ -1,129 +1,127 @@
-# Quick Start Guide - BGMI Scoreboard Deployment
+# 🚀 Quick Deploy Guide (Manual Method)
 
-## 🎯 What You Need
+Deploy your BGMI Scoreboard in **10 minutes** without using Blueprint!
 
-1. **GitHub Account** - To host your code
-2. **Render Account** - Free tier is fine ([render.com](https://render.com))
-3. **5 Minutes** - That's all it takes!
+## Part 1: Deploy Backend (5 min)
 
-## 🚀 Deploy in 3 Steps
+### Step 1: Create Web Service
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New +** → **Web Service**
+3. Connect your GitHub repository
+4. Click **Connect**
 
-### Step 1: Push to GitHub (2 minutes)
-
-```bash
-# Initialize git (if not done)
-git init
-
-# Add all files
-git add .
-
-# Commit
-git commit -m "Ready for deployment"
-
-# Add your GitHub repo
-git remote add origin https://github.com/YOUR_USERNAME/bgmi-scoreboard.git
-
-# Push
-git push -u origin main
+### Step 2: Configure
+```
+Name:           bgmi-scoreboard-backend
+Region:         Singapore
+Root Directory: backend
+Runtime:        Node
+Build Command:  npm install
+Start Command:  npm start
+Plan:           Free
 ```
 
-### Step 2: Deploy on Render (2 minutes)
+### Step 3: Add Environment Variable
+```
+NODE_ENV = production
+```
 
+### Step 4: Deploy
+- Click **Create Web Service**
+- Wait 2-3 minutes
+- **Copy your backend URL** ✅
+
+---
+
+## Part 2: Deploy Frontend (5 min)
+
+### Step 1: Create Static Site
 1. Go to [Render Dashboard](https://dashboard.render.com/)
-2. Click **New** → **Blueprint**
+2. Click **New +** → **Static Site**
 3. Connect your GitHub repository
-4. Click **Apply** (Render will create both services automatically)
+4. Click **Connect**
 
-### Step 3: Configure Frontend (1 minute)
+### Step 2: Configure
+```
+Name:            bgmi-scoreboard-frontend
+Region:          Singapore
+Root Directory:  frontend
+Build Command:   npm install && npm run build
+Publish Dir:     dist
+Plan:            Free
+```
 
-After deployment completes:
+### Step 3: Add Environment Variables
+**IMPORTANT**: Use your actual backend URL from Part 1!
 
-1. Go to your **backend service** → Copy the URL
-2. Go to your **frontend service** → **Environment** tab
-3. Add these variables:
-   ```
-   VITE_API_URL=https://YOUR-BACKEND-URL.onrender.com/api
-   VITE_SOCKET_URL=https://YOUR-BACKEND-URL.onrender.com
-   ```
-4. Click **Manual Deploy** → **Deploy latest commit**
+```
+VITE_API_URL     = https://YOUR-BACKEND-URL.onrender.com/api
+VITE_SOCKET_URL  = https://YOUR-BACKEND-URL.onrender.com
+```
 
-## ✅ Done! 
+Example:
+```
+VITE_API_URL     = https://bgmi-scoreboard-backend.onrender.com/api
+VITE_SOCKET_URL  = https://bgmi-scoreboard-backend.onrender.com
+```
 
-Your scoreboard is live at:
-- **Scoreboard**: `https://bgmi-scoreboard-frontend.onrender.com`
-- **Admin Panel**: `https://bgmi-scoreboard-frontend.onrender.com/admin`
+### Step 4: Deploy
+- Click **Create Static Site**
+- Wait 2-3 minutes
+- **Your app is live!** 🎉
+
+---
+
+## ✅ Test Your Deployment
+
+### Backend Test
+Visit: `https://your-backend-url.onrender.com/api/health`  
+Should see: `{"success": true, "message": "Server is healthy"}`
+
+### Frontend Test
+Visit: `https://your-frontend-url.onrender.com`  
+Should see: Scoreboard loading with no errors
+
+### Admin Panel Test
+Visit: `https://your-frontend-url.onrender.com/admin`  
+Should be able to add teams and manage matches
+
+---
 
 ## 📱 Share With Your Team
 
-Send these links to tournament participants:
-- **View Scoreboard**: `https://your-frontend-url.onrender.com`
-- **Admin Access**: `https://your-frontend-url.onrender.com/admin`
+**Scoreboard**: `https://your-frontend-url.onrender.com`  
+**Admin Panel**: `https://your-frontend-url.onrender.com/admin`
 
-## 🎮 Using the Scoreboard
+---
 
-### For Admins:
-1. Go to `/admin`
-2. Add all participating teams
-3. Start a new match when ready
-4. Submit results after each match
-5. Export data for records
-
-### For Viewers:
-1. Go to main URL
-2. Watch live updates
-3. See real-time leaderboard
-4. View match status
-
-## 🔧 Troubleshooting
+## 🔧 Common Issues
 
 ### "Cannot connect to server"
-- Wait 60 seconds (free tier wakes up from sleep)
-- Check environment variables are set correctly
-- Verify backend URL is correct
+- Wait 60 seconds (free tier wakes from sleep)
+- Check `VITE_API_URL` is correct
+- Ensure backend URL uses HTTPS
 
 ### "WebSocket connection failed"
-- Ensure URLs use HTTPS (not HTTP)
+- Check `VITE_SOCKET_URL` is correct
+- Ensure it uses HTTPS (not HTTP)
 - Refresh the page
-- Check browser console for errors
 
-## 💡 Pro Tips
+---
 
-1. **Free Tier Limits**: Services sleep after 15 minutes of inactivity
-2. **Wake Up Time**: First request takes 30-60 seconds
-3. **For Active Tournaments**: Consider upgrading to paid plan ($7/month)
-4. **Mobile Friendly**: Works on all devices
-5. **Real-time**: No refresh needed, updates automatically
+## 💡 Important Notes
 
-## 📊 Features
+- **Free Tier**: Services sleep after 15 minutes
+- **Wake Time**: First request takes 30-60 seconds
+- **Auto Deploy**: Pushes to GitHub trigger redeployment
+- **HTTPS**: Automatic on Render
 
-- ✅ Real-time score updates
-- ✅ Automatic ranking with tie-breakers
-- ✅ Match state management
-- ✅ Qualification tracking
-- ✅ Excel & JSON export
-- ✅ Beautiful responsive UI
-- ✅ Admin panel
-- ✅ LAN support
+---
 
-## 🆘 Need Help?
+## 📚 Need More Help?
 
-Check these files:
-- `DEPLOYMENT.md` - Detailed deployment guide
-- `DEPLOYMENT_CHECKLIST.md` - Step-by-step checklist
-- `README.md` - Full documentation
-
-## 🎉 Success Checklist
-
-- [ ] Backend deployed and healthy
-- [ ] Frontend deployed and loading
-- [ ] Socket connection working
-- [ ] Can add teams
-- [ ] Can submit matches
-- [ ] Leaderboard updates in real-time
-- [ ] Export functions work
+See `DEPLOYMENT.md` for detailed step-by-step instructions with screenshots and troubleshooting.
 
 ---
 
 **Ready for Tournament! 🎮🏆**
-
-Made with ❤️ by Chirag Singh
