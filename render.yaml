@@ -16,8 +16,11 @@ services:
     healthCheckPath: /api/health
 
   # Frontend Static Site
-  - type: static
+  - type: web
     name: bgmi-scoreboard-frontend
+    runtime: node
+    env: node
+    region: singapore
     plan: free
     buildCommand: cd frontend && npm install && npm run build
     staticPublishPath: frontend/dist
