@@ -29,10 +29,6 @@ services:
         sync: false
       - key: VITE_SOCKET_URL
         sync: false
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
 
   # Cron Job to Keep Backend Awake
   - type: cron
