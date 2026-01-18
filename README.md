@@ -1,6 +1,6 @@
-# BGMI Esports Live Scoreboard - Backend
+# BGMI Esports Live Scoreboard
 
-Production-ready Node.js backend for managing BGMI college tournament scoreboard with real-time updates, accurate scoring, and data export capabilities.
+Production-ready full-stack application for managing BGMI college tournament scoreboard with real-time updates, accurate scoring, and data export capabilities.
 
 ## 🎯 Features
 
@@ -10,20 +10,26 @@ Production-ready Node.js backend for managing BGMI college tournament scoreboard
 - ✅ Match state management (UPCOMING, LIVE, UPDATING, COMPLETED)
 - ✅ Qualification system (configurable top N teams)
 - ✅ Excel & JSON export for post-tournament records
-- ✅ In-memory storage (easily upgradable to database)
+- ✅ Beautiful, responsive UI with live animations
+- ✅ Admin panel for tournament management
 - ✅ LAN-ready for local network tournaments
-- ✅ Clean, well-commented code for viva/evaluation
 
 ## 🛠️ Tech Stack
 
+### Backend
 - **Node.js** - Runtime environment
 - **Express.js** - REST API framework
 - **Socket.IO** - Real-time bidirectional communication
 - **ExcelJS** - Excel file generation
-- **CORS** - Cross-origin resource sharing
-- **Body-Parser** - Request body parsing
 
-## 📦 Installation
+### Frontend
+- **React** - UI framework
+- **Vite** - Build tool
+- **TailwindCSS** - Styling
+- **Socket.IO Client** - Real-time updates
+- **React Router** - Navigation
+
+## 📦 Local Development
 
 ### Prerequisites
 - Node.js (v14 or higher)
@@ -31,103 +37,128 @@ Production-ready Node.js backend for managing BGMI college tournament scoreboard
 
 ### Setup Steps
 
-1. **Navigate to backend directory**
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd bgmi-sorceborad
+   ```
+
+2. **Backend Setup**
    ```bash
    cd backend
-   ```
-
-2. **Install dependencies** (already done)
-   ```bash
    npm install
-   ```
-
-3. **Start the server**
-   ```bash
    npm start
    ```
+   Server runs on: `http://localhost:5000`
 
-   Or for development:
+3. **Frontend Setup** (in a new terminal)
    ```bash
+   cd frontend
+   npm install
    npm run dev
    ```
+   Frontend runs on: `http://localhost:5173`
 
-4. **Server will start on:**
-   - Local: `http://localhost:5000`
-   - Network: `http://<YOUR_IP>:5000`
+## 🚀 Deployment on Render
 
-## 🏗️ Project Structure
+This project is configured for easy deployment on Render using a Blueprint specification.
 
-```
-backend/
-├── index.js                    # Main server entry point
-├── config/
-│   └── constants.js            # Scoring rules, match states
-├── models/
-│   ├── team.js                 # Team data & in-memory storage
-│   └── match.js                # Match state management
-├── services/
-│   ├── scoringService.js       # Point calculation logic
-│   ├── rankingService.js       # Leaderboard sorting
-│   └── exportService.js        # JSON/Excel export
-├── controllers/
-│   ├── teamController.js       # Team API handlers
-│   ├── matchController.js      # Match API handlers
-│   └── exportController.js     # Export API handlers
-├── routes/
-│   └── api.js                  # All REST API routes
-├── sockets/
-│   └── socketHandler.js        # Socket.IO event handlers
-└── exports/                    # Generated export files
-```
+### Option 1: Deploy via Render Dashboard (Recommended)
+
+1. **Push your code to GitHub**
+   ```bash
+   git init
+   git add .
+   git commit -m "Initial commit"
+   git remote add origin <your-github-repo-url>
+   git push -u origin main
+   ```
+
+2. **Connect to Render**
+   - Go to [Render Dashboard](https://dashboard.render.com/)
+   - Click **"New"** → **"Blueprint"**
+   - Connect your GitHub repository
+   - Render will automatically detect `render.yaml` and create both services
+
+3. **Configure Environment Variables**
+   
+   After deployment, set these environment variables in the **Frontend** service:
+   
+   - `VITE_API_URL`: `https://bgmi-scoreboard-backend.onrender.com/api`
+   - `VITE_SOCKET_URL`: `https://bgmi-scoreboard-backend.onrender.com`
+   
+   *(Replace with your actual backend URL from Render)*
+
+4. **Redeploy Frontend**
+   - After setting environment variables, trigger a manual deploy of the frontend service
+   - Your app will be live!
+
+### Option 2: Deploy Manually
+
+#### Backend Deployment
+1. Go to Render Dashboard → **New** → **Web Service**
+2. Connect your repository
+3. Configure:
+   - **Name**: `bgmi-scoreboard-backend`
+   - **Root Directory**: `backend`
+   - **Environment**: `Node`
+   - **Build Command**: `npm install`
+   - **Start Command**: `npm start`
+   - **Plan**: Free
+4. Add environment variable:
+   - `NODE_ENV`: `production`
+5. Click **Create Web Service**
+
+#### Frontend Deployment
+1. Go to Render Dashboard → **New** → **Static Site**
+2. Connect your repository
+3. Configure:
+   - **Name**: `bgmi-scoreboard-frontend`
+   - **Root Directory**: `frontend`
+   - **Build Command**: `npm install && npm run build`
+   - **Publish Directory**: `dist`
+4. Add environment variables:
+   - `VITE_API_URL`: `https://your-backend-url.onrender.com/api`
+   - `VITE_SOCKET_URL`: `https://your-backend-url.onrender.com`
+5. Click **Create Static Site**
+
+### Important Notes for Render Deployment
+
+- **Free Tier Limitations**: 
+  - Backend service will spin down after 15 minutes of inactivity
+  - First request after spin-down may take 30-60 seconds
+  - Consider upgrading to paid plan for production tournaments
+
+- **CORS Configuration**: 
+  - Already configured to accept all origins (`*`)
+  - Safe for public tournaments
+
+- **WebSocket Support**: 
+  - Render fully supports WebSocket connections
+  - No additional configuration needed
+
+## 🌐 Production URLs
+
+After deployment, you'll have:
+- **Backend API**: `https://bgmi-scoreboard-backend.onrender.com`
+- **Frontend**: `https://bgmi-scoreboard-frontend.onrender.com`
+- **Admin Panel**: `https://bgmi-scoreboard-frontend.onrender.com/admin`
 
 ## 📡 API Endpoints
 
-### Public Endpoints (Frontend/Scoreboard)
+### Public Endpoints
+- `GET /api/health` - Server health check
+- `GET /api/teams` - Get all teams
+- `GET /api/leaderboard` - Get ranked leaderboard
+- `GET /api/match/status` - Get current match status
 
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/api/health` | Server health check |
-| GET | `/api/teams` | Get all teams |
-| GET | `/api/teams/:id` | Get single team |
-| GET | `/api/leaderboard` | Get ranked leaderboard |
-| GET | `/api/stats` | Get tournament statistics |
-| GET | `/api/match/status` | Get current match status |
-| GET | `/api/match/history` | Get match history |
-| GET | `/api/export/data` | Get JSON data (no download) |
+### Admin Endpoints
+- `POST /api/admin/match/submit` - Submit match results
+- `POST /api/admin/match/start` - Start new match
+- `GET /api/admin/export/json` - Download JSON export
+- `GET /api/admin/export/excel` - Download Excel export
 
-### Admin Endpoints (Admin Panel)
-
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/api/admin/teams` | Add new team |
-| DELETE | `/api/admin/teams/reset` | Reset all teams |
-| POST | `/api/admin/match/start` | Start new match |
-| POST | `/api/admin/match/submit` | Submit match results |
-| POST | `/api/admin/match/status` | Update match status |
-| POST | `/api/admin/match/undo` | Undo last match |
-| POST | `/api/admin/qualification/update` | Update qualification |
-| POST | `/api/admin/tournament/reset` | Reset entire tournament |
-| GET | `/api/admin/export/json` | Download JSON export |
-| GET | `/api/admin/export/excel` | Download Excel export |
-
-## 🔌 Socket.IO Events
-
-### Events Emitted by Server (Client Receives)
-
-| Event | Description | Payload |
-|-------|-------------|---------|
-| `initialData` | Sent when client connects | `{ leaderboard, matchState, timestamp }` |
-| `currentState` | Current state on request | `{ leaderboard, matchState, timestamp }` |
-| `leaderboardUpdate` | Leaderboard changed | `{ leaderboard, timestamp }` |
-| `matchStatusUpdate` | Match status changed | `{ matchState, timestamp }` |
-| `qualificationUpdate` | Qualification updated | `{ qualified, eliminated, timestamp }` |
-| `matchSubmitted` | Match results submitted | `{ matchData, timestamp }` |
-
-### Events Received by Server (Client Sends)
-
-| Event | Description |
-|-------|-------------|
-| `requestCurrentState` | Request current state |
+See [API_EXAMPLES.md](./API_EXAMPLES.md) for detailed API documentation.
 
 ## 📊 Scoring System
 
@@ -151,203 +182,61 @@ backend/
 Total Points = Placement Points + Kill Points
 ```
 
-### Leaderboard Ranking (Priority Order)
-1. Higher Total Points
-2. Higher First-Place Finishes
-3. Higher Total Placement Points
-4. Higher Total Kill Points
+## 🎮 Usage
 
-## 🎮 Usage Examples
+1. **Access the Scoreboard**: Visit your frontend URL
+2. **Access Admin Panel**: Visit `<frontend-url>/admin`
+3. **Add Teams**: Use admin panel to add participating teams
+4. **Start Match**: Click "Start New Match" when ready
+5. **Submit Results**: After match ends, submit results for all teams
+6. **View Leaderboard**: Real-time updates on scoreboard
+7. **Export Data**: Download Excel/JSON for records
 
-### 1. Submit Match Results
+## 🔒 Security Considerations
 
-**Request:**
-```bash
-POST http://localhost:5000/api/admin/match/submit
-Content-Type: application/json
-
-{
-  "results": [
-    {
-      "teamName": "Team Alpha",
-      "kills": 12,
-      "placement": 1
-    },
-    {
-      "teamName": "Team Beta",
-      "kills": 8,
-      "placement": 2
-    },
-    {
-      "teamName": "Team Gamma",
-      "kills": 5,
-      "placement": 3
-    }
-  ]
-}
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "message": "Match results submitted successfully",
-  "data": {
-    "matchNumber": 1,
-    "results": [
-      {
-        "teamName": "Team Alpha",
-        "kills": 12,
-        "placement": 1,
-        "placementPoints": 10,
-        "killPoints": 12,
-        "totalPoints": 22
-      }
-    ],
-    "leaderboard": [...]
-  }
-}
-```
-
-### 2. Get Leaderboard
-
-**Request:**
-```bash
-GET http://localhost:5000/api/leaderboard
-```
-
-**Response:**
-```json
-{
-  "success": true,
-  "count": 3,
-  "stats": {
-    "totalTeams": 3,
-    "totalMatches": 1,
-    "totalKills": 25,
-    "avgPointsPerTeam": 18.67
-  },
-  "data": [
-    {
-      "rank": 1,
-      "id": 1,
-      "name": "Team Alpha",
-      "matchesPlayed": 1,
-      "totalKills": 12,
-      "totalPlacementPoints": 10,
-      "totalKillPoints": 12,
-      "totalPoints": 22,
-      "firstPlaceFinishes": 1,
-      "qualificationStatus": "PENDING"
-    }
-  ]
-}
-```
-
-### 3. Update Match Status
-
-**Request:**
-```bash
-POST http://localhost:5000/api/admin/match/status
-Content-Type: application/json
-
-{
-  "state": "LIVE"
-}
-```
-
-### 4. Update Qualification
-
-**Request:**
-```bash
-POST http://localhost:5000/api/admin/qualification/update
-Content-Type: application/json
-
-{
-  "qualificationLimit": 8
-}
-```
-
-## 🌐 LAN Setup for Tournament
-
-### Find Your IP Address
-
-**Windows:**
-```bash
-ipconfig
-```
-Look for "IPv4 Address" (e.g., 192.168.1.100)
-
-**Mac/Linux:**
-```bash
-ifconfig
-```
-
-### Connect from Other Devices
-
-Once server is running, other devices on the same network can access:
-- **API:** `http://192.168.1.100:5000/api/leaderboard`
-- **Socket.IO:** `ws://192.168.1.100:5000`
-
-## 📥 Export System
-
-### JSON Export
-- Contains complete tournament data
-- Includes all team statistics
-- Timestamped filename
-- Saved in `exports/` folder
-
-### Excel Export
-- Professional leaderboard format
-- Color-coded qualification status
-- Formatted headers and borders
-- Suitable for certificates and records
-- Saved in `exports/` folder
-
-## 🔒 Data Validation
-
-The backend includes comprehensive validation:
-- ✅ Team names cannot be empty
-- ✅ Kills must be non-negative
-- ✅ Placement must be 1-16
-- ✅ No duplicate placements in same match
-- ✅ No duplicate teams in same match
-- ✅ Match state must be valid
-
-## 🚀 Future Database Integration
-
-The code is structured for easy database integration:
-
-1. Replace `models/team.js` with database queries
-2. Replace `models/match.js` with database queries
-3. Keep all services and controllers unchanged
-4. Recommended: MongoDB, PostgreSQL, or MySQL
-
-## 📝 Notes for Viva/Evaluation
-
-- All code is well-commented and self-explanatory
-- Follows clean architecture principles
-- Separation of concerns (Models, Services, Controllers)
-- Error handling at every level
-- Console logging for debugging
-- Ready for production use
+- **Admin Panel**: Currently no authentication (add if needed)
+- **CORS**: Set to `*` for ease of use (restrict in production if needed)
+- **Rate Limiting**: Not implemented (add if needed)
 
 ## 🐛 Troubleshooting
 
-### Port Already in Use
-```bash
-# Change port in config/constants.js
-PORT: 5001
+### Backend not responding
+- Check Render logs in dashboard
+- Verify environment variables are set
+- Ensure service is not sleeping (free tier)
+
+### Frontend can't connect to backend
+- Verify `VITE_API_URL` and `VITE_SOCKET_URL` are correct
+- Check CORS settings
+- Ensure backend is running
+
+### Socket connection failed
+- Verify WebSocket URL is HTTPS (not HTTP)
+- Check browser console for errors
+- Ensure backend supports WebSocket
+
+## 📁 Project Structure
+
 ```
-
-### CORS Issues
-- Already configured for `*` (all origins)
-- Suitable for LAN tournaments
-
-### Socket Connection Failed
-- Check firewall settings
-- Ensure server IP is accessible
-- Verify port is not blocked
+bgmi-sorceborad/
+├── backend/                 # Node.js backend
+│   ├── config/             # Configuration files
+│   ├── controllers/        # API controllers
+│   ├── models/             # Data models
+│   ├── routes/             # API routes
+│   ├── services/           # Business logic
+│   ├── sockets/            # Socket.IO handlers
+│   └── index.js            # Server entry point
+├── frontend/               # React frontend
+│   ├── src/
+│   │   ├── components/     # React components
+│   │   ├── pages/          # Page components
+│   │   ├── services/       # API services
+│   │   └── App.jsx         # Main app component
+│   └── index.html          # HTML entry point
+├── render.yaml             # Render deployment config
+└── README.md               # This file
+```
 
 ## 👨‍💻 Author
 
@@ -362,3 +251,6 @@ ISC
 ---
 
 **Ready for Tournament! 🎮🏆**
+
+For detailed backend documentation, see [backend/README.md](./backend/README.md)
+For frontend documentation, see [frontend/README.md](./frontend/README.md)

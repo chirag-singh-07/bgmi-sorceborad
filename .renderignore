@@ -1,0 +1,28 @@
+# Files and directories to ignore during Render deployment
+
+# Documentation (not needed in production)
+*.md
+!README.md
+
+# Development files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Test files
+test-socket.html
+*.test.js
+*.spec.js
+
+# Local environment files
+.env.local
+.env.development
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Git
+.git/
+.gitignore
