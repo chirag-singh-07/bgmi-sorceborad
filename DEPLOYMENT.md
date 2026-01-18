@@ -119,6 +119,58 @@ VITE_SOCKET_URL=https://bgmi-scoreboard-backend.onrender.com
 
 ---
 
+### Part 3: Keep Backend Awake (Optional but Recommended)
+
+To prevent your backend from sleeping on the free tier, set up a cron job that pings it every 14 minutes.
+
+#### 1. Create Cron Job
+
+1. Go back to [Render Dashboard](https://dashboard.render.com/)
+2. Click **"New +"** → **"Cron Job"**
+3. Click **"Build and deploy from a Git repository"** → **"Next"**
+4. Select your `bgmi-scoreboard` repository
+5. Click **"Connect"**
+
+#### 2. Configure Cron Job
+
+Fill in these settings:
+
+| Setting | Value |
+|---------|-------|
+| **Name** | `bgmi-scoreboard-keep-alive` |
+| **Region** | Singapore (same as backend) |
+| **Branch** | `main` |
+| **Runtime** | `Node` |
+| **Build Command** | `echo "Keep alive cron"` |
+| **Start Command** | See below ⬇️ |
+| **Schedule** | `*/14 * * * *` |
+| **Plan** | `Free` |
+
+#### 3. Set Start Command
+
+**IMPORTANT**: Replace `YOUR-BACKEND-URL` with your actual backend URL from Part 1!
+
+```bash
+curl https://YOUR-BACKEND-URL.onrender.com/api/health || wget -q -O- https://YOUR-BACKEND-URL.onrender.com/api/health
+```
+
+**Example**:
+```bash
+curl https://bgmi-scoreboard-backend.onrender.com/api/health || wget -q -O- https://bgmi-scoreboard-backend.onrender.com/api/health
+```
+
+#### 4. Create Cron Job
+
+1. Click **"Create Cron Job"**
+2. Wait for initial setup to complete
+3. Done! Your backend will now stay awake 24/7! ✅
+
+**Result**: No more 30-60 second delays when accessing your scoreboard!
+
+For detailed instructions and alternative methods, see [KEEP_ALIVE_SETUP.md](./KEEP_ALIVE_SETUP.md).
+
+---
+
 ## 📝 Your Deployment URLs
 
 Record your URLs here for reference:

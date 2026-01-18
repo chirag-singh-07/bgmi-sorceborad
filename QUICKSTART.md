@@ -88,6 +88,28 @@ Should be able to add teams and manage matches
 
 ---
 
+## 🔄 Optional: Keep Backend Awake (Recommended)
+
+To prevent your backend from sleeping on free tier:
+
+1. Go to [Render Dashboard](https://dashboard.render.com/)
+2. Click **New +** → **Cron Job**
+3. Connect your repository
+4. Configure:
+   ```
+   Name:          bgmi-scoreboard-keep-alive
+   Schedule:      */14 * * * *
+   Build Command: echo "Keep alive"
+   Start Command: curl https://YOUR-BACKEND-URL.onrender.com/api/health
+   ```
+5. Click **Create Cron Job**
+
+**Result**: Backend stays awake 24/7! No more 30-60 second delays.
+
+See [KEEP_ALIVE_SETUP.md](./KEEP_ALIVE_SETUP.md) for detailed instructions and alternatives.
+
+---
+
 ## 📱 Share With Your Team
 
 **Scoreboard**: `https://your-frontend-url.onrender.com`  

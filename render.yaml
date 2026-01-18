@@ -33,3 +33,13 @@ services:
       - type: rewrite
         source: /*
         destination: /index.html
+
+  # Cron Job to Keep Backend Awake
+  - type: cron
+    name: bgmi-scoreboard-keep-alive
+    env: node
+    region: singapore
+    plan: free
+    schedule: "*/14 * * * *"
+    buildCommand: echo "Keep alive cron job"
+    startCommand: "curl https://bgmi-scoreboard-backend.onrender.com/api/health || wget -q -O- https://bgmi-scoreboard-backend.onrender.com/api/health"
